@@ -4,18 +4,18 @@
 	echo '<p>Thank you for your patience.</p>';
 	//Alter the functions file
 	$FunctionsFile = file_get_contents('../functions.php');
-	$FunctionsFile = explode('?><?php', $FunctionsFileData);
+	$FunctionsFileData = explode('?><?php', $FunctionsFile);
 	$FunctionsFileNew = $FunctionsFileData[0] . "?>" . file_get_contents('./functions.php.new');
 	file_put_contents('../functions.php',$FunctionsFileNew);
 	echo '<p>11% Complete.</p>';
 	//Alter Database
 	require_once('../functions.php');
-	$DBConnection = mysqli_connect($DBServer,$DBUsername,$DBPassword,$DBName);
+	$DBConnection = mysqli_connect(DBSERVER,DBUSER,DBPASS,DBNAME);
 	if (!$DBConnection)
 	{
 		die('Could not connect to database.  Please try again later.');
 	}
-	$DBQuery = "ALTER TABLE ". $DBPrefix . "_LoginTable ADD COLUMN UserBlurb LONGTEXT,ADD COLUMN UserImage VARCHAR(255);";
+	$DBQuery = "ALTER TABLE ". DBPREFIX . "_LoginTable ADD COLUMN UserBlurb LONGTEXT,ADD COLUMN UserImage VARCHAR(255);";
 	mysqli_query($DBConnection,$DBQuery);
 	mysqli_close($DBConnection);
 	echo '<p>22% Complete.</p>';
