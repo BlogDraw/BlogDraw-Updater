@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
 //Update Script for Updating BlogDraw to v0.0.1-beta-2.1
 echo '<h1>Starting Update...</h1>';
 echo '<p>Thank you for your patience.</p>';
@@ -25,17 +27,15 @@ RewriteRule ^(Back/functions) - [F,L,NC]" . $htaccessFileData[1];
 //Remove old analytics table from database
 $dBServerLocation = explode("DBSERVER', '", $functionsFileData[0]);
 $DBSERVER = explode("')", $dBServerLocation[1])[0];
-
 $dBUserLocation = explode("DBUSER', '", $functionsFileData[0]);
-$DUSER = explode("')", $dBUserLocation[1])[0];
-
+$DBUSER = explode("')", $dBUserLocation[1])[0];
 $dBPassLocation = explode("DBPASS', '", $functionsFileData[0]);
 $DBPASS = explode("')", $dBPassLocation[1])[0];
-
+$dBNameLocation = explode("DBNAME', '", $functionsFileData[0]);
+$DBNAME = explode("')", $dBNameLocation[1])[0];
 $dBPrefixLocation = explode("DBPREFIX', '", $functionsFileData[0]);
 $DBPREFIX = explode("')", $dBPrefixLocation[1])[0];
-
-$dBConnection = mysqli_connect($DBSERVER,$DUSER,$DBPASS,$DBNAME);
+$dBConnection = mysqli_connect($DBSERVER,$DBUSER,$DBPASS,$DBNAME);
 if (!$dBConnection)
 {
   die('Could not connect to database.  Please try again later.');
@@ -71,7 +71,14 @@ function scan_folder($dir)
       {
         $from = explode("updater", realpath($dir) . '/' . $file);
         $to = explode("BlogDraw-0.0.1-beta-2.1", realpath($dir) . '/' . $file);
-        file_put_contents('..' . $to[1], file_get_contents('.' . $from[1]));
+        if (!file_put_contents($_SERVER['DOCUMENT_ROOT'] . $to[1], file_get_contents('.' . $from[1])))
+        {
+          $copyToDir = implode('/', explode('/', ($_SERVER['DOCUMENT_ROOT'] . $to[1]), -1));
+          mkdir($copyToDir, 0755);
+          $newFile = fopen($_SERVER['DOCUMENT_ROOT'] . $to[1], "w");
+          fwrite($newFile, file_get_contents('.' . $from[1]));
+          fclose($newFile);
+        }
       }
     }
   }
