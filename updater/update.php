@@ -23,15 +23,19 @@ RewriteRule ^(Back/functions) - [F,L,NC]" . $htaccessFileData[1];
 }
 
 //Remove old analytics table from database
-$dBServerLocation = $functionsFileData[0].explode("DBSERVER', '");
-$DBSERVER = $dBServerLocation[1].explode("')")[0];
-$dBUserLocation = $functionsFileData[0].explode("DBUSER', '");
-$DBUSER = $dBUserLocation[1].explode("')")[0];
-$dBPassLocation = $functionsFileData[0].explode("DBPASS', '");
-$DBPASS = $dBPassLocation[1].explode("')")[0];
-$dBPrefixLocation = $functionsFileData[0].explode("DBPREFIX', '");
-$DBPREFIX = $dBPrefixLocation[1].explode("')")[0];
-$dBConnection = mysqli_connect($DBSERVER,$DBUSER,$DBPASS,$DBNAME);
+$dBServerLocation = explode("DBSERVER', '", $functionsFileData[0]);
+$DBSERVER = explode("')", $dBServerLocation[1])[0];
+
+$dBUserLocation = explode("DBUSER', '", $functionsFileData[0]);
+$DUSER = explode("')", $dBUserLocation[1])[0];
+
+$dBPassLocation = explode("DBPASS', '", $functionsFileData[0]);
+$DBPASS = explode("')", $dBPassLocation[1])[0];
+
+$dBPrefixLocation = explode("DBPREFIX', '", $functionsFileData[0]);
+$DBPREFIX = explode("')", $dBPrefixLocation[1])[0];
+
+$dBConnection = mysqli_connect($DBSERVER,$DUSER,$DBPASS,$DBNAME);
 if (!$dBConnection)
 {
   die('Could not connect to database.  Please try again later.');
@@ -58,7 +62,7 @@ function scan_folder($dir)
   {
     if (is_dir(realpath($dir) . '/' . $file))// If it's a directory, we want to traverse through that too.
     {
-      if ($file != '.' && $file != '..')// Don't infinitely loop, or loop back.  scandir gives pointers to . and .. too.
+      if ($file != '.' && $file != '..' && $file != 'Uploads')// Don't infinitely loop, or loop back.  scandir gives pointers to . and .. too.
         scan_folder(realpath($dir) . '/' . $file);// traverse deeper.
     }
     else
