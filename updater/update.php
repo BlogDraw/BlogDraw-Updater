@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
+//error_reporting(E_ALL);
+//ini_set('display_errors', 'On');
 //Update Script for Updating BlogDraw to v0.0.1-beta-2.1
 echo '<h1>Starting Update...</h1>';
 echo '<p>Thank you for your patience.</p>';
