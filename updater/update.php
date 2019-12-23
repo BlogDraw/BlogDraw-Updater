@@ -37,9 +37,7 @@ $dBPrefixLocation = explode("DBPREFIX', '", $functionsFileData[0]);
 $DBPREFIX = explode("')", $dBPrefixLocation[1])[0];
 $dBConnection = mysqli_connect($DBSERVER,$DBUSER,$DBPASS,$DBNAME);
 if (!$dBConnection)
-{
   die('Could not connect to database.  Please try again later.');
-}
 $dBQuery = "CREATE TABLE ". $DBPREFIX . "_AnalyticsTable IF NOT EXISTS;";
 mysqli_query($dBConnection,$dBQuery);// To ensure we're not deleting a non-existent table.
 $dBQuery = "DROP TABLE ". $DBPREFIX . "_AnalyticsTable;";
