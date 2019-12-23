@@ -23,17 +23,24 @@ RewriteRule ^(Back/functions) - [F,L,NC]" . $htaccessFileData[1];
 }
 
 //Remove old analytics table from database
-require_once('../functions.php');
-$DBConnection = mysqli_connect(DBSERVER,DBUSER,DBPASS,DBNAME);
-if (!$DBConnection)
+$dBServerLocation = $functionsFileData[0].explode("DBSERVER', '");
+$DBSERVER = $dBServerLocation[1].explode("')")[0];
+$dBUserLocation = $functionsFileData[0].explode("DBUSER', '");
+$DBUSER = $dBUserLocation[1].explode("')")[0];
+$dBPassLocation = $functionsFileData[0].explode("DBPASS', '");
+$DBPASS = $dBPassLocation[1].explode("')")[0];
+$dBPrefixLocation = $functionsFileData[0].explode("DBPREFIX', '");
+$DBPREFIX = $dBPrefixLocation[1].explode("')")[0];
+$dBConnection = mysqli_connect($DBSERVER,$DBUSER,$DBPASS,$DBNAME);
+if (!$dBConnection)
 {
   die('Could not connect to database.  Please try again later.');
 }
-$DBQuery = "CREATE TABLE ". DBPREFIX . "_AnalyticsTable IF NOT EXISTS;";
-mysqli_query($DBConnection,$DBQuery);// To ensure we're not deleting a non-existent table.
-$DBQuery = "DROP TABLE ". DBPREFIX . "_AnalyticsTable;";
-mysqli_query($DBConnection,$DBQuery);// Get rid of the table.
-mysqli_close($DBConnection);
+$dBQuery = "CREATE TABLE ". $DBPREFIX . "_AnalyticsTable IF NOT EXISTS;";
+mysqli_query($dBConnection,$dBQuery);// To ensure we're not deleting a non-existent table.
+$dBQuery = "DROP TABLE ". $DBPREFIX . "_AnalyticsTable;";
+mysqli_query($dBConnection,$dBQuery);// Get rid of the table.
+mysqli_close($dBConnection);
 
 //Change files
 $rootDir = "BlogDraw-0.0.1-beta-2.1";// The root node containing new files.
