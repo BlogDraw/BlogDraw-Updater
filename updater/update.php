@@ -1,7 +1,11 @@
 <?php
+/**
+ * Update Script for Updating BlogDraw to v0.0.1-rc-1
+ **/
+////Development error reporting.  Should usually be turned off in production systems.
 //error_reporting(E_ALL);
 //ini_set('display_errors', 'On');
-//Update Script for Updating BlogDraw to v0.0.1-rc-1
+
 echo '<h1>Starting Update...</h1>';
 echo '<p>Thank you for your patience.</p>';
 
@@ -28,6 +32,18 @@ file_put_contents('../robots.txt', $robotsFile);// Write it in.
 $rootDir = "BlogDraw-0.0.1-rc-1";// The root node containing new files.
 scan_folder($rootDir);// Replaces old BlogDraw files with new ones from the root node.
 
+//Update Database
+require_once('../functions.php');
+$DBConnection = mysqli_connect(DBSERVER,DBUSER,DBPASS,DBNAME);
+if (!$DBConnection)
+  die('Failed to update Database.');
+$DBQuery = "ALTER TABLE ". DBPREFIX . "_LoginTable ADD COLUMN DisplayName VARCHAR(25) NOT NULL;";// Add the rc-1 DisplayName feature.
+mysqli_query($DBConnection,$DBQuery);
+mysqli_close($DBConnection);
+
+echo "<p>Done!  You can now close this window and delete the &quot;updater&quot; directory.</p>";
+echo "<p><strong>NEXT STEPS: </strong> For your previous uploads to appear in future versions of BlogDraw, please copy and paste them from the \"Uploads\"directory to the \"uploads\" directory.  To ensure better system security, please delete the \"Back\" directory.  New versions of those files are now available in the \"control\" directory.</p>";
+
 /**
  * This recursively reads a directory and all of it's subdirectories given a relative filepath, then replaces the old files with the new ones.
  * Essentially filesystem traversal.
@@ -52,7 +68,8 @@ function scan_folder($dir)
         if (!file_put_contents($_SERVER['DOCUMENT_ROOT'] . $to[1], file_get_contents('.' . $from[1])))
         {
           $copyToDir = implode('/', explode('/', ($_SERVER['DOCUMENT_ROOT'] . $to[1]), -1));
-          mkdir($copyToDir, 0755);
+          if (! mkdir($copyToDir, 0755, TRUE))
+            echo '<br />Failed to create directory ' . $copyToDir . '!';
           $newFile = fopen($_SERVER['DOCUMENT_ROOT'] . $to[1], "w");
           fwrite($newFile, file_get_contents('.' . $from[1]));
           fclose($newFile);
@@ -61,7 +78,4 @@ function scan_folder($dir)
     }
   }
 }
-
-echo "<p>Done!  You can now close this window and delete the &quot;updater&quot; directory.</p>";
-echo "<p><strong>NEXT STEPS: </strong> For your previous uploads to appear in future versions of BlogDraw, please copy and paste them from the \"Uploads\"directory to the \"uploads\" directory.  To ensure better system security, please delete the \"Back\" directory.  New versions of those files are now available in the \"control\" directory.</p>";
 ?>
